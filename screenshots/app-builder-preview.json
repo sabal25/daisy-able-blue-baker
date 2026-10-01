@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "EXPLORE · Visa Eligibility",
+      "hasCanvas": false,
+      "bodyTextLen": 8607,
+      "bodyTextHash": "617f2f50c27b32f7eeb4fcfca22e37b1c4bf78b2d0ac27e6f48c0d0541799b70",
+      "bodyTextPrefix": "EXPLORE 208 JURISDICTIONS Worldwide Passport & Cascade-Visa Elig",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "EXPLORE · Visa Eligibility",
+      "hasCanvas": false,
+      "bodyTextLen": 8513,
+      "bodyTextHash": "2dd6d07013731aaaf9ffe7e75edd35ffbe73d5a761fb8c4c34392adf4900c76c",
+      "bodyTextPrefix": "EXPLORE 208 JURISDICTIONS Nepal +2 Held Visas Quick Presets: Nep",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [
+    "BRAND NOTE: no custom public/og.jpg — the platform will serve the og.grok.me placeholder. Custom cards are the default for games of every kind (DOM board/word games included), whimsical apps, creative tools, and brand-forward pages — only plain utilities (converters, CRUD trackers, admin dashboards) keep the placeholder. If this app is not a plain utility, finish the brand-asset pass per /workspace/.grok/skills/og/SKILL.md."
+  ],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
