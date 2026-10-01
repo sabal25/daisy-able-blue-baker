@@ -92,6 +92,10 @@ const BOOSTER_ISSUERS = [
   { id: 'AU', name: 'Australia', flagCode: 'au' },
   { id: 'JP', name: 'Japan', flagCode: 'jp' },
   { id: 'IE', name: 'Ireland', flagCode: 'ie' },
+  { id: 'NZ', name: 'New Zealand', flagCode: 'nz' },
+  { id: 'KR', name: 'South Korea', flagCode: 'kr' },
+  { id: 'SG', name: 'Singapore', flagCode: 'sg' },
+  { id: 'AE', name: 'United Arab Emirates', flagCode: 'ae' },
 ];
 
 const BOOSTER_DOC_KINDS = [
@@ -264,6 +268,82 @@ const BOOSTER_DOC_KINDS = [
     shortTitle: 'Ireland Residence',
     isResidence: true,
     note: 'Accepted by Türkiye, Dutch Caribbean, Montenegro, and Georgia.',
+  },
+  // 8. New Zealand
+  {
+    id: 'nz_visitor_visa',
+    issuer: 'NZ',
+    flagCode: 'nz',
+    title: 'New Zealand Visitor / Tourist Visa',
+    shortTitle: 'NZ Visitor Visa',
+    isResidence: false,
+    note: 'NZeTA is not a visa. This is a sticker or granted visitor visa. Unlocks Korea transit, Taiwan TAC, Singapore VFTF, and Georgia.',
+  },
+  {
+    id: 'nz_work_visa',
+    issuer: 'NZ',
+    flagCode: 'nz',
+    title: 'New Zealand Work Visa',
+    shortTitle: 'NZ Work Visa',
+    isResidence: false,
+    note: 'Accredited Employer, Working Holiday, or other temporary work visa. Treated as a valid NZ visa, not permanent residence.',
+  },
+  {
+    id: 'nz_permanent_resident',
+    issuer: 'NZ',
+    flagCode: 'nz',
+    title: 'New Zealand Resident / Permanent Resident Visa',
+    shortTitle: 'NZ Resident Visa',
+    isResidence: true,
+    note: 'Resident visa or permanent resident visa (including the resident label). Distinct from a visitor or work visa.',
+  },
+  // 9. South Korea — named by Taiwan TAC and Georgia-style lists
+  {
+    id: 'kr_visa',
+    issuer: 'KR',
+    flagCode: 'kr',
+    title: 'South Korea Visa (Visitor or Work)',
+    shortTitle: 'Korea Visa',
+    isResidence: false,
+    note: 'Physical Korean visa. Unlocks Taiwan TAC and Georgia. K-ETA alone is not a visa.',
+  },
+  {
+    id: 'kr_residence',
+    issuer: 'KR',
+    flagCode: 'kr',
+    title: 'South Korea Alien Registration Card',
+    shortTitle: 'Korea ARC',
+    isResidence: true,
+    note: 'Residence card for mid-to-long-term stay in Korea.',
+  },
+  // 10. Singapore — named by Philippines AJACSSUK
+  {
+    id: 'sg_visa',
+    issuer: 'SG',
+    flagCode: 'sg',
+    title: 'Singapore Visit Pass / Work Pass Visa',
+    shortTitle: 'Singapore Visa',
+    isResidence: false,
+    note: 'Singapore entry visa or in-principle work pass. Unlocks the Philippines AJACSSUK privilege for eligible passports.',
+  },
+  {
+    id: 'sg_pr',
+    issuer: 'SG',
+    flagCode: 'sg',
+    title: 'Singapore Permanent Resident (Re-Entry Permit)',
+    shortTitle: 'Singapore PR',
+    isResidence: true,
+    note: 'Singapore PR with a valid re-entry permit.',
+  },
+  // 11. UAE residence — Albania 10-year rule and Georgia GCC list
+  {
+    id: 'ae_residence_10y',
+    issuer: 'AE',
+    flagCode: 'ae',
+    title: 'UAE Residence Permit (10-year)',
+    shortTitle: 'UAE Residence',
+    isResidence: true,
+    note: 'Albania accepts a UAE residence permit issued for 10 years that still has at least 1 year left. Georgia accepts valid GCC residence. A UAE tourist visa does not unlock these.',
   },
 ];
 
@@ -507,6 +587,248 @@ const JURISDICTIONS = RAW_JURISDICTIONS.map(([id, name, region, sharedZone, capi
 }));
 
 const JURISDICTION_MAP = Object.fromEntries(JURISDICTIONS.map((j) => [j.id, j]));
+
+const SCHENGEN_VISA = "https://home-affairs.ec.europa.eu/policies/schengen-borders-and-visa/visa-policy_en";
+
+const OFFICIAL_VISA_PAGES = {
+  US: "https://travel.state.gov/content/travel/en/us-visas.html",
+  CA: "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html",
+  MX: "https://www.inm.gob.mx/gobmx/word/index.php/paises-requieren-visa/",
+  BR: "https://www.gov.br/mre/pt-br/assuntos/portal-consular/vistos",
+  AR: "https://www.argentina.gob.ar/interior/migraciones",
+  CL: "https://www.extranjeria.gob.cl/",
+  CO: "https://www.cancilleria.gov.co/tramites_servicios/visa",
+  PE: "https://www.gob.pe/migraciones",
+  CR: "https://www.migracion.go.cr/",
+  PA: "https://www.migracion.gob.pa/",
+  BZ: "https://immigration.gov.bz/",
+  GT: "https://igm.gob.gt/",
+  SV: "https://www.migracion.gob.sv/",
+  HN: "https://inm.gob.hn/",
+  NI: "https://www.migob.gob.ni/migracion/",
+  DO: "https://migracion.gob.do/",
+  JM: "https://www.pica.gov.jm/",
+  BS: "https://www.immigration.gov.bs/",
+  BB: "https://www.immigration.gov.bb/",
+  TT: "https://nationalsecurity.gov.tt/divisions/immigration/",
+  UY: "https://www.gub.uy/ministerio-interior/migracion",
+  PY: "https://www.migraciones.gov.py/",
+  BO: "https://www.migracion.gob.bo/",
+  EC: "https://www.cancilleria.gob.ec/2020/06/16/visas/",
+  VE: "https://www.saime.gob.ve/",
+  GY: "https://moha.gov.gy/",
+  SR: "https://homeaffairs.gov.sr/",
+  CU: "https://misiones.cubaminrex.cu/en/consular-services",
+  HT: "https://www.immigration.gouv.ht/",
+  AG: "https://immigration.gov.ag/",
+  DM: "https://dominica.gov.dm/",
+  GD: "https://gov.gd/",
+  KN: "https://www.gov.kn/",
+  LC: "https://www.govt.lc/",
+  VC: "https://www.gov.vc/",
+  PR: "https://travel.state.gov/content/travel/en/us-visas.html",
+  VI: "https://travel.state.gov/content/travel/en/us-visas.html",
+  BM: "https://www.gov.bm/department/immigration",
+  KY: "https://www.exploregov.ky/customs-border-control",
+  VG: "https://bvi.gov.vg/departments/immigration-department",
+  TC: "https://www.gov.tc/bordercontrol/",
+  AW: "https://www.aruba.com/us/plan-your-visit/getting-to-aruba/passports-and-visas",
+  CW: "https://www.curacao.com/en/questions/visa",
+  SX: "https://www.sintmaartengov.org/government/pages/immigration.aspx",
+  GF: SCHENGEN_VISA,
+  GL: "https://www.nyidanmark.dk/en-GB/You-want-to-apply/Short-stay-visa/Visa-to-the-Faroe-Islands-or-Greenland",
+  GB: "https://www.gov.uk/browse/visas-immigration",
+  IE: "https://www.irishimmigration.ie/visas/",
+  FR: SCHENGEN_VISA, DE: SCHENGEN_VISA, IT: SCHENGEN_VISA, ES: SCHENGEN_VISA,
+  PT: SCHENGEN_VISA, NL: SCHENGEN_VISA, BE: SCHENGEN_VISA, LU: SCHENGEN_VISA,
+  CH: "https://www.sem.admin.ch/sem/en/home/themen/einreise.html",
+  AT: SCHENGEN_VISA, GR: SCHENGEN_VISA, SE: SCHENGEN_VISA, NO: "https://www.udi.no/en/want-to-apply/visit-and-holiday/",
+  DK: SCHENGEN_VISA, FI: SCHENGEN_VISA, IS: SCHENGEN_VISA, PL: SCHENGEN_VISA,
+  CZ: SCHENGEN_VISA, HU: SCHENGEN_VISA, SK: SCHENGEN_VISA, SI: SCHENGEN_VISA,
+  HR: SCHENGEN_VISA, EE: SCHENGEN_VISA, LV: SCHENGEN_VISA, LT: SCHENGEN_VISA,
+  MT: SCHENGEN_VISA, LI: SCHENGEN_VISA, RO: SCHENGEN_VISA, BG: SCHENGEN_VISA,
+  CY: "https://www.mip.gov.cy/",
+  MC: SCHENGEN_VISA, SM: SCHENGEN_VISA, VA: SCHENGEN_VISA,
+  AD: "https://www.exteriors.ad/en/travel-to-andorra",
+  FO: "https://www.nyidanmark.dk/en-GB/You-want-to-apply/Short-stay-visa/Visa-to-the-Faroe-Islands-or-Greenland",
+  AL: "https://punetejashtme.gov.al/en/regjimi-i-vizave-per-te-huajt/",
+  ME: "https://www.gov.me/en/mvp",
+  MK: "https://mfa.gov.mk/en",
+  BA: "https://www.mvp.gov.ba/konzularne_informacije/vize/",
+  RS: "https://www.mfa.gov.rs/en/citizens/travel-serbia/visa-regime",
+  XK: "https://www.mfa-ks.net/en/",
+  MD: "https://mfa.gov.md/en/content/visa-regime-foreigners",
+  UA: "https://mfa.gov.ua/en/consular-affairs/entry-and-stay-foreigners-ukraine",
+  GE: "https://www.geoconsul.gov.ge/HtmlPage/Html/View?id=956&lang=Eng",
+  TR: "https://www.evisa.gov.tr/en/",
+  AM: "https://www.mfa.am/en/visa/",
+  AZ: "https://evisa.gov.az/",
+  BY: "https://mfa.gov.by/en/visa/",
+  RU: "https://electronic-visa.kdmid.ru/index_en.html",
+  JP: "https://www.mofa.go.jp/j_info/visit/visa/index.html",
+  SG: "https://www.ica.gov.sg/enter-transit-depart/entering-singapore",
+  KR: "https://www.visa.go.kr/",
+  MY: "https://malaysiavisa.imi.gov.my/",
+  BN: "https://www.immigration.gov.bn/",
+  HK: "https://www.immd.gov.hk/eng/services/visas/visit-transit.html",
+  MO: "https://www.gov.mo/en/services/ps-1474/",
+  TW: "https://www.boca.gov.tw/mp-2.html",
+  TH: "https://www.thaievisa.go.th/",
+  PH: "https://evisa.gov.ph/",
+  ID: "https://molina.imigrasi.go.id/",
+  VN: "https://evisa.xuatnhapcanh.gov.vn/",
+  CN: "https://cova.mfa.gov.cn/",
+  IN: "https://indianvisaonline.gov.in/",
+  NP: "https://nepaliport.immigration.gov.np/",
+  LK: "https://www.eta.gov.lk/",
+  MV: "https://imuga.immigration.gov.mv/",
+  BT: "https://www.mfa.gov.bt/visa/",
+  BD: "https://visa.gov.bd/",
+  PK: "https://visa.nadra.gov.pk/",
+  AF: "https://mfa.gov.af/",
+  KH: "https://www.evisa.gov.kh/",
+  LA: "https://laoevisa.gov.la/",
+  MM: "https://evisa.moip.gov.mm/",
+  TL: "https://migracao.gov.tl/",
+  MN: "https://en.consul.mn/visa",
+  KZ: "https://www.gov.kz/memleket/entities/mfa?lang=en",
+  UZ: "https://e-visa.gov.uz/",
+  KG: "https://www.evisa.e-gov.kg/",
+  TJ: "https://www.evisa.tj/",
+  TM: "https://www.mfa.gov.tm/en",
+  KP: "https://www.mfa.gov.kp/",
+  AE: "https://u.ae/en/information-and-services/visa-and-emirates-id",
+  QA: "https://www.moi.gov.qa/visa/",
+  SA: "https://visa.visitsaudi.com/",
+  OM: "https://evisa.rop.gov.om/",
+  KW: "https://evisa.moi.gov.kw/",
+  BH: "https://www.evisa.gov.bh/",
+  IL: "https://israel-entry.piba.gov.il/",
+  PS: "https://www.moi.pna.ps/",
+  JO: "https://eservices.moi.gov.jo/",
+  LB: "https://www.general-security.gov.lb/",
+  IQ: "https://evisa.iq/",
+  IR: "https://evisa.mfa.ir/",
+  SY: "https://www.mofaex.gov.sy/",
+  YE: "https://www.mofa-ye.org/",
+  ZA: "https://www.dha.gov.za/index.php/immigration-services",
+  MU: "https://passport.govmu.org/passport/",
+  SC: "https://seychelles.govtas.com/",
+  MA: "https://www.acces-maroc.ma/",
+  TN: "https://www.evisa.gov.tn/",
+  EG: "https://visa2egypt.gov.eg/",
+  KE: "https://www.etakenya.go.ke/",
+  TZ: "https://visa.immigration.go.tz/",
+  RW: "https://www.migration.gov.rw/",
+  UG: "https://visas.immigration.go.ug/",
+  ET: "https://www.evisa.gov.et/",
+  NG: "https://immigration.gov.ng/",
+  GH: "https://ghanaimmigration.org/",
+  SN: "https://www.sec.gouv.sn/",
+  CI: "https://snedai.com/e-visa/",
+  CV: "https://www.ease.gov.cv/",
+  GM: "https://gid.gov.gm/",
+  NA: "https://eservices.mhaiss.gov.na/",
+  BW: "https://www.gov.bw/visas",
+  ZW: "https://www.evisa.gov.zw/",
+  ZM: "https://www.zambiaimmigration.gov.zm/",
+  MZ: "https://evisa.gov.mz/",
+  MG: "https://www.evisamada.gov.mg/",
+  DZ: "https://www.mfa.gov.dz/",
+  LY: "https://www.mfa.gov.ly/",
+  SD: "https://www.mofa.gov.sd/",
+  SS: "https://mofaic.gov.ss/",
+  AO: "https://www.smevisa.gov.ao/",
+  CM: "https://www.evisacam.cm/",
+  CD: "https://www.dgi.gouv.cd/",
+  CG: "https://www.diplomatie.gouv.cg/",
+  GA: "https://www.dgdi.ga/",
+  GQ: "https://www.guineaecuatorialpress.com/",
+  BJ: "https://evisa.gouv.bj/",
+  TG: "https://voyage.gouv.tg/",
+  BF: "https://www.visaburkina.bf/",
+  ML: "https://www.diplomatie.gouv.ml/",
+  NE: "https://www.diplomatie.gouv.ne/",
+  TD: "https://www.diplomatie.gouv.td/",
+  SO: "https://www.mfa.gov.so/",
+  DJ: "https://www.evisa.gouv.dj/",
+  ER: "https://www.mfa.gov.er/",
+  MW: "https://www.immigration.gov.mw/",
+  LS: "https://www.gov.ls/",
+  SZ: "https://www.gov.sz/",
+  SL: "https://www.slimmigration.gov.sl/",
+  LR: "https://www.lisgis.gov.lr/",
+  GN: "https://www.paf.gov.gn/",
+  GW: "https://www.gov.gw/",
+  MR: "https://www.diplomatie.gov.mr/",
+  ST: "https://www.smf.st/",
+  KM: "https://www.diplomatie.gouv.km/",
+  BI: "https://www.mae.gov.bi/",
+  CF: "https://www.diplomatie.gouv.cf/",
+  AU: "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing",
+  NZ: "https://www.immigration.govt.nz/new-zealand-visas",
+  FJ: "https://www.immigration.gov.fj/",
+  PG: "https://www.immigration.gov.pg/",
+  WS: "https://www.mpmc.gov.ws/",
+  TO: "https://www.revenue.gov.to/",
+  VU: "https://immigration.gov.vu/",
+  SB: "https://www.commerce.gov.sb/immigration/",
+  KI: "https://www.mfa.gov.ki/",
+  TV: "https://www.timelesstuvalu.com/",
+  NR: "https://www.naurugov.nr/",
+  PW: "https://www.palaugov.pw/executive-branch/ministries/state/",
+  FM: "https://www.fsmgov.org/",
+  MH: "https://www.rmigov.com/",
+  GU: "https://travel.state.gov/content/travel/en/us-visas.html",
+  MP: "https://travel.state.gov/content/travel/en/us-visas.html",
+  AS: "https://travel.state.gov/content/travel/en/us-visas.html",
+};
+
+function officialVisaPage(destinationId) {
+  return OFFICIAL_VISA_PAGES[destinationId] || SCHENGEN_VISA;
+}
+
+function visaApplicationSteps(category) {
+  if (category === 'visa_free' || category === 'freedom_of_movement') {
+    return [
+      'No visa application. Your passport is enough for a short tourist stay.',
+      'Check the passport is valid for the whole trip, usually 3 to 6 months after you leave.',
+      'Carry a return or onward ticket, a hotel booking, and proof you can pay for the trip if the airline or border asks.',
+      'Fill the country’s free arrival card online if it has one (examples: Malaysia MDAC, Thailand TDAC). That card is not a visa.',
+      'At the airport the airline checks your documents first. Immigration then stamps or records how many days you may stay.',
+    ];
+  }
+  if (category === 'eta' || category === 'evisa' || category === 'evisa_simplified') {
+    return [
+      'Apply online on the official visa page before you buy a non-refundable ticket.',
+      'You need a passport scan, a recent photo, travel dates, and a card to pay the fee.',
+      'Wait for the approval email. Save the PDF or approval number on your phone and print a copy.',
+      'The airline will refuse boarding if the approval is missing, expired, or in a different name.',
+      'Show the passport and the approval at check-in and again at immigration. Stay only the days printed on the approval.',
+    ];
+  }
+  if (category === 'voa') {
+    return [
+      'You normally apply at the airport when you land, not at an embassy. Confirm the official page, because a few countries still want an online approval first.',
+      'Bring passport photos, the fee in cash or card, a return ticket, a hotel booking, and proof of funds.',
+      'Go to the visa desk before the immigration queue. Fill the form, pay, and wait for the stamp or sticker.',
+      'Only then join immigration. If the desk is closed or your nationality is not on the visa-on-arrival list, you can be sent back.',
+    ];
+  }
+  if (category === 'visa_banned') {
+    return [
+      'Do not book travel. This passport is not eligible to enter, and an application will not fix that.',
+    ];
+  }
+  return [
+    'Find the embassy, consulate, or official visa center that covers the country where you live. Apply before you fly.',
+    'Typical file: passport, photos, form, bank statements, job or school letter, return ticket, hotel, and travel insurance.',
+    'Book an appointment if one is required. Some places take biometrics (photo and fingerprints).',
+    'Pay the fee and wait. This can take days or several weeks. Do not lock non-refundable flights until the visa is in the passport.',
+    'When the passport comes back, check your name, the dates, and whether it is single or multiple entry. Travel only inside those dates.',
+  ];
+}
+
 
 const BOOSTER_RULES = [
   {
@@ -993,6 +1315,7 @@ const BOOSTER_RULES = [
       'us_b1_b2', 'us_f_j_h_l_o', 'us_green_card',
       'uk_standard_visitor', 'uk_student_work', 'uk_ilr_residence_evisa',
       'schengen_c_multi', 'schengen_d_national', 'schengen_eu_residence',
+      'ae_residence_10y',
     ],
     eligiblePassportNationalities: 'all_visa_required_nationalities',
     excludedNationalities: [],
@@ -1004,7 +1327,7 @@ const BOOSTER_RULES = [
     resultStatus: 'visa_free',
     feeUsdApprox: 0,
     conditions: [
-      'Requires a valid, multiple-entry US, UK, or Schengen visa that HAS BEEN PREVIOUSLY USED at least once to enter the issuing country/zone, OR a valid US/UK/Schengen residence permit.',
+      'Requires a valid, multiple-entry US, UK, or Schengen visa that HAS BEEN PREVIOUSLY USED at least once to enter the issuing country/zone, OR a valid US/UK/Schengen residence permit, OR a UAE residence permit issued for 10 years with at least 1 year remaining.',
       'Allows up to 90 days stay within a 180-day period.',
     ],
     sourceUrl: 'https://punetejashtme.gov.al/en/regjimi-i-vizave-per-te-huajt/',
@@ -1120,6 +1443,10 @@ const BOOSTER_RULES = [
       'schengen_c_multi', 'schengen_d_national', 'schengen_eu_residence',
       'jp_sticker_visa', 'jp_residence_card',
       'ie_short_stay_visa', 'ie_residence_permit',
+      'nz_visitor_visa', 'nz_work_visa', 'nz_permanent_resident',
+      'kr_visa', 'kr_residence',
+      'sg_visa', 'sg_pr',
+      'ae_residence_10y',
     ],
     eligiblePassportNationalities: 'all_visa_required_nationalities',
     excludedNationalities: [],
@@ -1131,7 +1458,7 @@ const BOOSTER_RULES = [
     resultStatus: 'visa_free',
     feeUsdApprox: 0,
     conditions: [
-      'Holders of valid visas or residence permits from 50+ listed countries (including US, UK, Schengen/EU, Canada, Australia, Japan, Ireland, GCC) may enter Georgia visa-free for 90 days in any 180-day period.',
+      'Holders of valid visas or residence permits from 50+ listed countries (including US, UK, Schengen/EU, Canada, Australia, New Zealand, Japan, Korea, Singapore, Ireland, and GCC/UAE residence) may enter Georgia visa-free for 90 days in any 180-day period.',
       'Visa or residence permit must be valid on the day of entry into Georgia.',
     ],
     sourceUrl: 'https://www.geoconsul.gov.ge/',
@@ -1171,6 +1498,7 @@ const BOOSTER_RULES = [
       'us_b1_b2', 'us_f_j_h_l_o', 'us_green_card',
       'ca_trv_visitor_study_work', 'ca_pr_card',
       'au_visitor_visa', 'au_permanent_resident',
+      'nz_visitor_visa', 'nz_work_visa', 'nz_permanent_resident',
     ],
     eligiblePassportNationalities: ['IN', 'CN', 'PH', 'VN', 'ID'],
     excludedNationalities: ['NP', 'NG', 'SY', 'AF'],
@@ -1198,6 +1526,8 @@ const BOOSTER_RULES = [
       'au_visitor_visa', 'au_permanent_resident',
       'schengen_c_multi', 'schengen_eu_residence',
       'jp_sticker_visa', 'jp_residence_card',
+      'nz_visitor_visa', 'nz_work_visa', 'nz_permanent_resident',
+      'kr_visa', 'kr_residence',
     ],
     eligiblePassportNationalities: ['IN', 'VN', 'ID', 'MM', 'KH', 'LA'],
     excludedNationalities: ['CN', 'NP', 'NG', 'PK'],
@@ -1225,6 +1555,7 @@ const BOOSTER_RULES = [
       'au_visitor_visa', 'au_permanent_resident',
       'schengen_c_multi', 'schengen_eu_residence',
       'jp_sticker_visa', 'jp_residence_card',
+      'sg_visa', 'sg_pr',
     ],
     eligiblePassportNationalities: ['IN', 'CN'],
     excludedNationalities: ['NP', 'NG'],
@@ -1252,6 +1583,7 @@ const BOOSTER_RULES = [
       'au_visitor_visa', 'au_permanent_resident',
       'schengen_c_multi', 'schengen_eu_residence',
       'jp_sticker_visa', 'jp_residence_card',
+      'nz_visitor_visa', 'nz_work_visa', 'nz_permanent_resident',
     ],
     eligiblePassportNationalities: ['IN', 'CN'],
     excludedNationalities: ['NP', 'NG'],
@@ -1363,7 +1695,7 @@ const EXPLICIT_BASELINES = {
   // NEPAL (NP)
   NP_IN: { status: 'visa_free', stay: 365, fee: 0, program: '1950 Peace & Friendship Treaty', notes: 'Nepali citizens enjoy freedom of movement and unlimited stay in India with a valid passport or citizenship certificate.' },
   NP_SG: { status: 'visa_free', stay: 30, fee: 0, program: 'ASEAN/SAARC Exemption', notes: 'Nepali passport holders receive 30 days visa-free entry into Singapore (SG Arrival Card required).' },
-  NP_MY: { status: 'visa_free', stay: 30, fee: 0, program: 'MDAC Exemption', notes: '30 days visa-free entry with Malaysia Digital Arrival Card.' },
+  NP_MY: { status: 'evisa', stay: 30, fee: 5, program: 'Malaysia eVisa (VWR)', notes: 'Nepal is on Malaysia’s visa-required list. A US green card or US visa does not make a Nepali passport visa-free. Apply for a Malaysian eVisa before travel, then submit the free Malaysia Digital Arrival Card (MDAC) within 3 days of arrival.' },
   NP_PH: { status: 'visa_free', stay: 30, fee: 0, program: 'Executive Order 408', notes: '30 days visa-free entry for Nepali citizens with onward ticket.' },
   NP_MV: { status: 'visa_on_arrival', stay: 30, fee: 0, program: 'Free Tourist VoA', notes: 'Free 30-day Visa on Arrival with IMUGA Traveller Declaration.' },
   NP_LK: { status: 'visa_on_arrival', stay: 30, fee: 0, program: 'SAARC VoA / ETA', notes: '30-day entry for SAARC nationals.' },
@@ -1374,7 +1706,7 @@ const EXPLICIT_BASELINES = {
   // INDIA (IN)
   IN_NP: { status: 'visa_free', stay: 365, fee: 0, program: 'Freedom of Movement', notes: 'Indian citizens enjoy unrestricted entry into Nepal with a valid passport or Voter ID.' },
   IN_BT: { status: 'visa_free', stay: 14, fee: 15, program: 'Entry Permit (SDF)', notes: 'Visa-free entry permit; Sustainable Development Fee of INR 1,200/night applies.' },
-  IN_TH: { status: 'visa_free', stay: 60, fee: 0, program: 'Tourism Exemption', notes: '60 days visa-free entry for Indian tourists.' },
+  IN_TH: { status: 'visa_free', stay: 30, fee: 0, program: '30-Day Visa Exemption (from 15 Sep 2026)', notes: 'Indian ordinary passports do not need a Thai eVisa for tourism. The old 60-day exemption ended 15 September 2026. Stay is now up to 30 days. Passport valid 6+ months, return ticket, hotel, about THB 20,000 per person, and the Thailand Digital Arrival Card (TDAC) within 72 hours of arrival. Longer stays still need a visa.' },
   IN_MY: { status: 'visa_free', stay: 30, fee: 0, program: 'Visa Waiver + MDAC', notes: 'Visa-free entry up to 30 days for Indian citizens.' },
   IN_MU: { status: 'visa_free', stay: 90, fee: 0, program: 'Visa Exemption', notes: '90 days visa-free for Indian tourists.' },
   IN_SC: { status: 'visa_free', stay: 90, fee: 12, program: 'Visitor Permit + TA', notes: 'Visa-free Visitor Permit upon completing Seychelles Electronic Border System.' },
@@ -2081,7 +2413,7 @@ function ShareCardModal({ resolved, onClose, darkMode }) {
     // Brand Header
     ctx.fillStyle = '#FBF9FF';
     ctx.font = '800 26px system-ui, -apple-system, sans-serif';
-    ctx.fillText('EXPLORE · WORLDWIDE VISA ELIGIBILITY ENGINE', 110, 118);
+    ctx.fillText('EXPLORE PASSPORT · WORLDWIDE VISA ELIGIBILITY', 110, 118);
 
     // Status Banner Pill
     const statusText = resolved.isBoosted
@@ -2107,7 +2439,7 @@ function ShareCardModal({ resolved, onClose, darkMode }) {
 
     // Stay & Fee Row
     const stayLabel = resolved.effectiveMaxStayDays ? `${resolved.effectiveMaxStayDays} Days Max Stay` : 'Consular Stay Limit';
-    const feeLabel = resolved.effectiveFeeUsd === 0 ? 'No Visa Fee ($0)' : `Approx. Fee: $${resolved.effectiveFeeUsd} USD`;
+    const feeLabel = resolved.effectiveCategory === 'visa_free' ? 'Visa Free' : 'Visit official site';
     ctx.fillStyle = 'rgba(251, 249, 255, 0.88)';
     ctx.font = '600 30px system-ui, -apple-system, sans-serif';
     ctx.fillText(`${stayLabel}   ·   ${feeLabel}   ·   ${resolved.destination.region}`, 110, 355);
@@ -2261,8 +2593,6 @@ function ShareCardModal({ resolved, onClose, darkMode }) {
 function CountryDetailModal({
   resolved,
   onClose,
-  onAddToTrip,
-  isInTrip,
   onOpenBoosterManager,
   darkMode,
 }) {
@@ -2370,13 +2700,18 @@ function CountryDetailModal({
               <span className="text-[11px] uppercase tracking-wider text-purple-200 block">
                 Typical Fee
               </span>
-              <span className="text-lg sm:text-xl font-extrabold mt-0.5 block">
-                {effectiveFeeUsd === 0
-                  ? 'Free ($0)'
-                  : effectiveFeeUsd
-                  ? `~$${effectiveFeeUsd} USD`
-                  : 'Consular Fee'}
-              </span>
+              {effectiveCategory === 'visa_free' ? (
+                <span className="text-lg sm:text-xl font-extrabold mt-0.5 block">Visa Free</span>
+              ) : (
+                <a
+                  href={officialVisaPage(destination.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-base sm:text-lg font-extrabold mt-0.5 block underline decoration-white/40"
+                >
+                  Visit official site
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -2593,11 +2928,38 @@ function CountryDetailModal({
             </div>
           </div>
 
+          <div
+            className="p-4 rounded-2xl border space-y-2.5"
+            style={{
+              backgroundColor: darkMode ? 'rgba(255,255,255,0.04)' : '#FFFFFF',
+              borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(34,26,58,0.1)',
+            }}
+          >
+            <div className="text-xs font-extrabold uppercase tracking-wider opacity-75">
+              How to apply
+            </div>
+            <ol className="list-decimal pl-4 space-y-1.5 text-sm leading-relaxed">
+              {visaApplicationSteps(effectiveCategory).map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+            <a
+              href={officialVisaPage(destination.id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-bold underline"
+              style={{ color: BRAND.sunsetOrange }}
+            >
+              Open the official visa page
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
           {/* Official Source + Verification Footer */}
           <div className="flex flex-wrap items-center justify-between gap-3 text-xs opacity-75 pt-1">
             <span>Last verified: {appliedBoosterRule?.lastVerifiedIsoDate || baselineRule.lastVerifiedIsoDate}</span>
             <a
-              href={appliedBoosterRule?.sourceUrl || baselineRule.sourceUrl}
+              href={officialVisaPage(destination.id)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 font-bold underline hover:text-orange-500"
@@ -2609,15 +2971,6 @@ function CountryDetailModal({
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-purple-500/20">
-            <button
-              onClick={() => onAddToTrip(destination.id)}
-              className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-bold text-sm text-white shadow-md transition-transform active:scale-95"
-              style={{ backgroundColor: isInTrip ? BRAND.teal : BRAND.royalPurple }}
-            >
-              {isInTrip ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-              <span>{isInTrip ? 'Added to Trip Planner' : 'Add to Trip Planner'}</span>
-            </button>
-
             <button
               onClick={() => setShowShareCard(true)}
               className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-2xl font-bold text-sm text-white shadow-md transition-transform active:scale-95"
@@ -2673,7 +3026,7 @@ function PassportPickerModal({
           <div>
             <h3 className="font-extrabold text-lg">Select Your Passport(s)</h3>
             <p className="text-xs opacity-75">
-              Choose up to 2 passports. EXPLORE automatically picks the better status per destination.
+              Choose up to 2 passports. Explore Passport automatically picks the better status per destination.
             </p>
           </div>
           <button
@@ -3539,7 +3892,7 @@ export default function App() {
   ]);
 
   // Navigation & Filter State
-  const [activeTab, setActiveTab] = useState('explorer'); // 'explorer' | 'compare' | 'trip' | 'profile'
+  const [activeTab, setActiveTab] = useState('explorer');
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL' | 'visa_free' | 'visa_on_arrival' | 'evisa_eta' | 'visa_required' | 'BOOSTED'
   const [regionFilter, setRegionFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -3549,14 +3902,6 @@ export default function App() {
   const [activeDetailResolved, setActiveDetailResolved] = useState(null);
   const [showPassportModal, setShowPassportModal] = useState(false);
   const [showBoosterModal, setShowBoosterModal] = useState(false);
-
-  // Multi-Stop Trip Planner State
-  const [tripStops, setTripStops] = useState([
-    { iso: 'MX', days: 14 },
-    { iso: 'PA', days: 7 },
-    { iso: 'AL', days: 10 },
-    { iso: 'TR', days: 8 },
-  ]);
 
   useEffect(() => {
     try {
@@ -3695,18 +4040,6 @@ export default function App() {
     setHeldBoosters(preset.boosters);
   };
 
-  const handleAddTripStop = (iso) => {
-    setTripStops((prev) => [...prev, { iso, days: 10 }]);
-  };
-
-  const handleRemoveTripStop = (idx) => {
-    setTripStops((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleUpdateStopDays = (idx, days) => {
-    setTripStops((prev) => prev.map((s, i) => (i === idx ? { ...s, days } : s)));
-  };
-
   return (
     <div
       className={`min-h-screen transition-colors duration-200 ${
@@ -3752,7 +4085,7 @@ export default function App() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="font-black text-lg sm:text-xl tracking-tight">EXPLORE</h1>
+                  <h1 className="font-black text-lg sm:text-xl tracking-tight">Explore Passport</h1>
                   <span
                     className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider text-white"
                     style={{ backgroundColor: BRAND.royalPurple }}
@@ -4058,10 +4391,9 @@ export default function App() {
                     } = item;
 
                     return (
-                      <button
+                      <div
                         key={destination.id}
-                        onClick={() => setActiveDetailResolved(item)}
-                        className="group p-4 rounded-2xl border text-left transition-all hover:scale-[1.01] hover:shadow-lg flex items-center justify-between gap-3"
+                        className="group p-4 rounded-2xl border text-left transition-all hover:shadow-lg flex items-center justify-between gap-3"
                         style={{
                           backgroundColor: isBoosted
                             ? darkMode
@@ -4077,8 +4409,11 @@ export default function App() {
                             : 'rgba(34,26,58,0.1)',
                         }}
                       >
-                        {/* Left: Circular Flag + Name + Subtitles */}
-                        <div className="flex items-center gap-3.5 min-w-0">
+                        <button
+                          type="button"
+                          onClick={() => setActiveDetailResolved(item)}
+                          className="flex items-center gap-3.5 min-w-0 flex-1 text-left"
+                        >
                           <FlagBadge isoCode={destination.id} size={44} darkMode={darkMode} />
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
@@ -4110,7 +4445,6 @@ export default function App() {
                               )}
                             </div>
 
-                            {/* Boosted Attribution or Almost-Unlocked Hint */}
                             {isBoosted && unlockingDoc && (
                               <div className="inline-flex items-center gap-1 mt-1 text-[11px] font-bold text-amber-500 dark:text-amber-300">
                                 <Sparkles className="w-3 h-3 shrink-0" />
@@ -4124,14 +4458,29 @@ export default function App() {
                               </div>
                             )}
                           </div>
-                        </div>
+                        </button>
 
-                        {/* Right: Status Pill + Chevron */}
-                        <div className="flex items-center gap-2 shrink-0">
-                          <StatusPill resolved={item} size="sm" />
-                          <ChevronRight className="w-4 h-4 opacity-40 group-hover:translate-x-0.5 transition-transform" />
+                        <div className="flex flex-col items-end gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setActiveDetailResolved(item)}
+                            className="flex items-center gap-2"
+                          >
+                            <StatusPill resolved={item} size="sm" />
+                            <ChevronRight className="w-4 h-4 opacity-40" />
+                          </button>
+                          <a
+                            href={officialVisaPage(destination.id)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-extrabold underline"
+                            style={{ color: BRAND.sunsetOrange }}
+                          >
+                            Official visa page
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -4146,18 +4495,6 @@ export default function App() {
               resolvedList={resolvedList}
               onSelectDestination={(res) => setActiveDetailResolved(res)}
               onOpenBoosterManager={() => setShowBoosterModal(true)}
-              darkMode={darkMode}
-            />
-          )}
-
-          {activeTab === 'trip' && (
-            <TripPlannerTabView
-              tripStops={tripStops}
-              onAddStop={handleAddTripStop}
-              onRemoveStop={handleRemoveTripStop}
-              onUpdateStopDays={handleUpdateStopDays}
-              resolvedMap={resolvedMap}
-              onSelectDestination={(res) => setActiveDetailResolved(res)}
               darkMode={darkMode}
             />
           )}
@@ -4301,11 +4638,10 @@ export default function App() {
             borderColor: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(34,26,58,0.12)',
           }}
         >
-          <div className="max-w-xl mx-auto grid grid-cols-4 gap-2">
+          <div className="max-w-xl mx-auto grid grid-cols-3 gap-2">
             {[
               { id: 'explorer', label: 'Explore', icon: Compass, badge: counts.easy },
               { id: 'compare', label: 'Compare', icon: ArrowLeftRight, badge: counts.boosted },
-              { id: 'trip', label: 'Trip Planner', icon: Plane, badge: tripStops.length },
               { id: 'profile', label: 'Profile', icon: UserCheck, badge: null },
             ].map((tab) => {
               const Icon = tab.icon;
@@ -4344,12 +4680,6 @@ export default function App() {
           <CountryDetailModal
             resolved={activeDetailResolved}
             onClose={() => setActiveDetailResolved(null)}
-            onAddToTrip={(iso) => {
-              if (!tripStops.some((s) => s.iso === iso)) {
-                handleAddTripStop(iso);
-              }
-            }}
-            isInTrip={tripStops.some((s) => s.iso === activeDetailResolved.destination.id)}
             onOpenBoosterManager={() => setShowBoosterModal(true)}
             darkMode={darkMode}
           />
